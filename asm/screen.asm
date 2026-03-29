@@ -15,6 +15,7 @@
 .import coursor_raw_h
 .import need_clear
 .importzp ptr
+.import symb
 .import read_joy1
 
 .export clear_screen
@@ -218,6 +219,9 @@ skip:
     JMP while
 
   break:  
+  LDA symb
+  JSR draw_char
+  DEC cursor_x
 cont:
   ; проверка, показать или скрыть курсор
   LDA show_cursor

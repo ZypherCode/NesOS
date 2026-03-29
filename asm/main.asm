@@ -21,18 +21,66 @@
   forever:
   LDA last_key
   BEQ forever
-  LDX stdin_write_ptr
-  STA stdin,X
-  INC stdin_write_ptr
+  
 
   CMP #$ff
   BEQ exec
 
+  CMP #04
+  BEQ inc_symb
+
+  CMP #05
+  BEQ dec_symb
+
+  CMP #01
+  BEQ add_symb
+
+  CMP #02
+  BEQ jmp_symb
+
+add_symb:
+  LDA symb
   LDX write_ptr
   STA stdout_buffer,X
   INC write_ptr  
+  
+  LDX stdin_write_ptr
+  STA stdin,X
+  INC stdin_write_ptr
+
+  LDA #$00
+  STA symb
   JMP pass_out
   
+inc_symb:
+  INC symb
+  LDA symb
+  CMP #$60
+  BNE pass_out
+  LDA #$00
+  STA symb
+  JMP pass_out
+
+jmp_symb:
+  CLC
+  LDA symb
+  ADC #$10
+  STA symb
+  CMP #$60
+  BNE pass_out
+  LDA #$00
+  STA symb
+  JMP pass_out
+
+dec_symb:
+  DEC symb
+  LDA symb
+  CMP #$ff
+  BNE pass_out
+  LDA #$5e
+  STA symb
+  JMP pass_out
+
 pass_out:
   LDA #$00
   STA last_key
@@ -40,6 +88,12 @@ pass_out:
   JMP forever
 
 exec:
+  LDA #$ff
+  LDX stdin_write_ptr
+  STA stdin,X
+  INC stdin_write_ptr
+  LDA #$00
+  STA symb
   JSR execute
 
   JMP forever

@@ -28,23 +28,56 @@ ReadB:
   beq ReadSelect ; Переходим к чтению Select 
   
 ReadSelect:
-  LDA $4016       ; Кнопка B
+  LDA $4016
   AND #%00000001 
   bne press_select
-  beq release_all ; Переходим к чтению Select 
+  beq ReadStart
+
+ReadStart:
+  LDA $4016  
+  AND #%00000001 
+  bne press_start
+  beq ReadUp
+
+ReadUp:
+  LDA $4016  
+  AND #%00000001 
+  bne press_up
+  beq ReadDown
+
+ReadDown:
+  LDA $4016  
+  AND #%00000001 
+  bne press_down
+  beq release_all 
 
 press_a:
-  LDA #$21
+  LDA #$01
   STA current_input
   JMP exit
 
 press_b:
-  LDA #$22
+  LDA #$02
   STA current_input
   JMP exit
 
 press_select:
   LDA #$ff
+  STA current_input
+  JMP exit
+
+press_start:
+  LDA #$03
+  STA current_input
+  JMP exit
+
+press_up:
+  LDA #$04
+  STA current_input
+  JMP exit
+
+press_down:
+  LDA #$05
   STA current_input
   JMP exit
 
