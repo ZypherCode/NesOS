@@ -18,6 +18,18 @@
 .import symb
 .import read_joy1
 
+.export cls
+.proc cls
+  PHA
+  LDA #$00
+  STA cursor_x
+  STA cursor_y
+  LDA #29
+  STA need_clear
+  PLA
+  RTS
+.endproc
+
 .export clear_screen
 .proc clear_screen
   JSR get_coursor_raw

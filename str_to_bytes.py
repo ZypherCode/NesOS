@@ -1,5 +1,5 @@
-string = "~> "
-
+string = 'GitHub: ZypherCode/NesOS'
+print(len(string))
 out = []
 for char in string:
     out.append("$" + hex(ord(char) - 32)[2:])

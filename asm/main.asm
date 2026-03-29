@@ -16,6 +16,7 @@
 .import need_clear
 .import symb
 .import cursor_x
+.import blink_counter
 
 .proc main_loop
   forever:
@@ -27,16 +28,16 @@
   BEQ exec
 
   CMP #04
-  BEQ inc_symb
+  BEQ inc_symb ; Up pressed
 
   CMP #05
-  BEQ dec_symb
+  BEQ dec_symb ; Down pressed
 
   CMP #01
-  BEQ add_symb
+  BEQ add_symb ; A pressed
 
   CMP #02
-  BEQ jmp_symb
+  BEQ jmp_symb ; B pressed
 
 add_symb:
   LDA symb
@@ -129,22 +130,34 @@ exec:
   STX show_cursor
   STX timer
   STX stdin_write_ptr
+  STX blink_counter
   LDX #$01
   STX cursor_y 
 
-  ; add cursor sprite
-  LDA #$08
-  STA $0200
-
-  LDA #$3f
-  STA $0201
-
+  ; Clear bufers
+  LDX #$00
   LDA #$00
-  STA $0202
+clear_bfr:
+  CPX #$ff
+  BEQ end_clear_bfr
+  STA stdin,X
+  STA stdout_buffer,X
+  STA $0200,X  ; Clear garbage sprites in OAM
+  INX
+  JMP clear_bfr
+  end_clear_bfr:
 
+  ; add cursor sprite
+  LDA #$08  ; Y
+  STA $0200
+  LDA #$3f  ; ID in ascii.chr
+  STA $0201
+  LDA #$00
+  STA $0202 ; Flags
   LDA #$0
-  STA $0203
+  STA $0203 ; X
 
+  ; Print hello
   LDX #<hello_string
   LDY#>hello_string
   JSR printl
