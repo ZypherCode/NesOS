@@ -18,8 +18,22 @@
 .import cursor_x
 .import blink_counter
 
-.proc main_loop
+.export wait_for_input
+.proc wait_for_input
+  LDX #$00
+  LDA #$00
+  clear_stdin:
+  CPX #$ff
+  BEQ end
+  STA stdin,X
+  INX
+  JMP clear_stdin
+  end:
+  LDA #$00
+  STA stdin_write_ptr
+
   forever:
+
   LDA last_key
   BEQ forever
   
@@ -89,14 +103,23 @@ pass_out:
   JMP forever
 
 exec:
+  LDA #$00
+  STA last_key
   LDA #$ff
   LDX stdin_write_ptr
   STA stdin,X
   INC stdin_write_ptr
   LDA #$00
   STA symb
-  JSR execute
 
+  RTS
+.endproc
+
+.proc main_loop
+  forever:
+  JSR wait_for_input
+
+  JSR execute
   JMP forever
   RTS
 .endproc
@@ -131,6 +154,7 @@ exec:
   STX timer
   STX stdin_write_ptr
   STX blink_counter
+  STX last_key
   LDX #$01
   STX cursor_y 
 

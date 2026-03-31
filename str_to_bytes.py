@@ -1,4 +1,4 @@
-string = 'GitHub: ZypherCode/NesOS'
+string = 'echo'
 print(len(string))
 out = []
 for char in string:
